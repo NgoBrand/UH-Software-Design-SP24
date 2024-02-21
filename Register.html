@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Client Register</title>
+</head>
+<body>
+    <h1>Client Profile</h1>
+    <form action="/register" method="post">
+        <label for="fullName">Full Name:</label>
+        <input type="text" id="fullName" name="fullName" maxlength="60" required><br>
+
+        <label for="email">Email:</label>
+        <input type="text" id="email" name="email" maxlength="60" required><br>
+
+        <label for="password">Password:</label>
+        <input type="password" id="password" name="password" maxlength="60" required><br>
+
+        <label for="passwordConfirm">Confirm Password:</label>
+        <input type="password" id="passwordConfirm" name="passwordConfirm" maxlength="60" required><br>
+
+        <input type="submit" value="Register">
+    </form>
+</body>
+</html>
