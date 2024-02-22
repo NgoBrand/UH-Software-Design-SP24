@@ -4,6 +4,7 @@
     box-sizing: border-box;
 }
 
+
 body {
     font-family: Arial, sans-serif;
     background-color: #f5f5f5;
@@ -77,4 +78,81 @@ h1 {
     form {
         max-width: 100%;
     }
+}
+
+
+/*Style Sheet for Fuel Quote History*/
+
+.history-header{
+    font-size: 2em;
+    font-weight: bold;
+    margin-top: 15px;
+}
+
+.history-table{
+    border-collapse: collapse;
+    font-size: .95em;
+    margin-top: 25px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 90%;
+    min-width: 400px;
+    border-radius: 4px 4px 0 0;
+    overflow: hidden;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+}
+
+.history-table thead th:nth-child(2){
+    width: 40%;
+}
+
+.history-table thead tr{
+    background-color: rgb(255, 246, 234);
+    text-align: left;
+    font-weight: bold;
+}
+
+.history-table th, .history-table td{
+    padding: 12px 15px;
+    border: 1px solid lightgray;
+}
+
+
+.history-table tbody tr:nth-of-type(even){
+    background-color: gainsboro;
+}
+
+/* Style Sheet for Navigation */
+
+.top-bar{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 25px;
+    margin-right: auto;
+    margin-left: auto;
+    width: 90%;
+}
+
+.links{
+    list-style: none;
+}
+
+.links li{
+    display: inline-block;
+    padding: 0 10px;
+}
+
+.links button{
+    padding: 7px 20px;
+    cursor: pointer;
+    border: 1px solid lightgray;
+    border-radius: 15px;
+    background-color: rgba(240, 240, 240, 1);
+    transition: all 0.3s ease 0s;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.links button:hover{
+    background-color: rgba(220, 220, 220, 0.70);
 }
