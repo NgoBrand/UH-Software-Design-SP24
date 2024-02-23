@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" href="styles.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fuel Quote Form</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('loadProfile').addEventListener('click', function() {
+                // loads delivery address, suppossed to get from profilemanage.html
+                const clientProfile = JSON.parse(localStorage.getItem('clientProfile'));
+                if (clientProfile) {
+                    const fullAddress = `${clientProfile.address1}, ` +
+                                        `${clientProfile.address2 ? clientProfile.address2 + ', ' : ''}` +
+                                        `${clientProfile.city}, ${clientProfile.state} ` +
+                                        `${clientProfile.zipcode}`;
+                    document.getElementById('deliveryAddress').value = fullAddress;
+                }
+            });
+            document.getElementById('clearForm').addEventListener('click', function() {
+                document.getElementById('fuelQuoteForm').reset();
+                // clears current profile from profile manage page can togle on or off
+                //localStorage.removeItem('clientProfile');
+            });
+        });
+    </script>
+</head>
+<body>
+    <header class="top-bar">
+        <h1>Fuel Quote Form</h1>
+        <nav>
+            <ul class="links">
+                <li><a href="FuelHistory.html"><button>View Fuel History</button></a></li>
+                <li><a href="ProfileManage.html"><button>Profile</button></a></li>
+            </ul>
+        </nav>
+    </header>
+    <form id="fuelQuoteForm">
+        <h1>Request a Fuel Quote</h1>
+        <div>
+            <label for="gallonsRequested">Gallons Requested:</label>
+            <input type="number" id="gallonsRequested" name="gallonsRequested" required>
+        </div>
+        <div>
+            <label for="deliveryAddress">Delivery Address:</label>
+            <input type="text" id="deliveryAddress" name="deliveryAddress" readonly>
+        </div>
+        <div>
+            <label for="deliveryDate">Delivery Date:</label>
+            <input type="date" id="deliveryDate" name="deliveryDate" required>
+        </div>
+        <div>
+            <label for="suggestedPrice">Suggested Price / gallon:</label>
+            <input type="number" id="suggestedPrice" name="suggestedPrice" readonly>
+        </div>
+        <div>
+            <label for="totalAmountDue">Total Amount Due:</label>
+            <input type="number" id="totalAmountDue" name="totalAmountDue" readonly>
+        </div>
+        <input type="submit" value="Submit Quote">
+        <input type="button" value="Clear" id="clearForm"> 
+        <input type="button" value="Load Profile" id="loadProfile"> 
+    </form>
+</body>
+</html>
+
+
+
+<!--     
+    <template>
+        <tr>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+            <td></td>
+        </tr>
+    </template> 
+-->

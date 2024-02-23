@@ -5,6 +5,26 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Profile</title>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            document.querySelector('form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                const profileData = {
+                    fullName: document.getElementById('fullName').value,
+                    address1: document.getElementById('address1').value,
+                    address2: document.getElementById('address2').value,
+                    city: document.getElementById('city').value,
+                    state: document.getElementById('state').value,
+                    zipcode: document.getElementById('zipcode').value
+                };
+                // profile data saved to local storage, for fuel quote form
+                // helps me populate from client profile to the fuel quote form paged
+                localStorage.setItem('clientProfile', JSON.stringify(profileData));
+                alert('Profile saved.');
+                
+            });
+        });
+    </script>
 </head>
 <body>
     <h1>Client Profile</h1>
