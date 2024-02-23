@@ -157,62 +157,72 @@ h1 {
     background-color: rgba(220, 220, 220, 0.70);
 }
 
-/* Style Sheet for Fuel Quote Form*/
-form {
-    max-width: 600px; 
-    padding: 40px; 
-    background-color: #fff; 
-    border-radius: 8px; 
-    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); 
-    margin: 40px auto; 
-}
+/* Style Sheet for Fuel Quote Form */
 
-input[type="number"], input[type="date"] {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 20px; 
-    border: 1px solid #ccc;
-    border-radius: 4px; 
+.fuel-quote-form {
+    max-width: 600px;
+    padding: 20px 40px; 
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    margin: 40px auto;
     font-size: 16px; 
 }
 
-input[readonly] {
+.fuel-quote-form h1 {
+    font-size: 24px; 
+    margin-bottom: 30px; 
+    color: #333;
+    text-align: left; 
+}
+
+.fuel-quote-form input[type="number"], 
+.fuel-quote-form input[type="date"], 
+.fuel-quote-form input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px; 
+}
+
+.fuel-quote-form input[readonly] {
     background-color: #e9ecef;
     color: #495057;
 }
 
-.top-bar h1 {
-    margin-bottom: 20px;
-    color: #333; 
-}
-
-input[type="submit"] {
-    width: 100%; 
-    background-color: #007bff; 
+.fuel-quote-form input[type="submit"] {
+    background-color: #007bff;
     color: white;
-    padding: 15px; 
-    margin-top: 10px; 
-    font-size: 18px; 
+    padding: 10px 20px;
+    border: none;
+    border-radius: 4px;
+    font-size: 18px;
+    margin-top: 20px; 
+    width: auto; 
+    cursor: pointer;
 }
 
-input[type="submit"]:hover {
-    background-color: #0056b3; 
+.fuel-quote-form input[type="submit"]:hover {
+    background-color: #0056b3;
 }
 
-.top-bar {
-    background-color: #f8f9fa; 
-    padding: 20px 0; 
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); 
+.fuel-quote-form .button-row {
+    display: flex;
+    justify-content: space-between; 
 }
 
-.links button {
-    background-color: #007bff; 
-    color: white;
-    border: none; 
-    border-radius: 4px; 
-    padding: 10px 15px;
+.fuel-quote-form .button-row button {
+    background-color: transparent;
+    color: #007bff;
+    padding: 10px 20px;
+    border: 1px solid #007bff;
+    border-radius: 4px;
+    font-size: 18px;
+    cursor: pointer;
 }
 
-.links button:hover {
-    background-color: #0056b3; 
+.fuel-quote-form .button-row button:hover {
+    background-color: #0056b3;
 }

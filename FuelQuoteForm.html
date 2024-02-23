@@ -8,7 +8,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             document.getElementById('loadProfile').addEventListener('click', function() {
-                // loads delivery address, suppossed to get from profilemanage.html
+                // loads delivery address, supposed to get from profilemanage.html
                 const clientProfile = JSON.parse(localStorage.getItem('clientProfile'));
                 if (clientProfile) {
                     const fullAddress = `${clientProfile.address1}, ` +
@@ -20,61 +20,51 @@
             });
             document.getElementById('clearForm').addEventListener('click', function() {
                 document.getElementById('fuelQuoteForm').reset();
-                // clears current profile from profile manage page can togle on or off
-                //localStorage.removeItem('clientProfile');
+                // able to clear current profile
+                // localStorage.removeItem('clientProfile');
             });
         });
     </script>
 </head>
 <body>
-    <header class="top-bar">
-        <h1>Fuel Quote Form</h1>
-        <nav>
-            <ul class="links">
-                <li><a href="FuelHistory.html"><button>View Fuel History</button></a></li>
-                <li><a href="ProfileManage.html"><button>Profile</button></a></li>
-            </ul>
-        </nav>
-    </header>
-    <form id="fuelQuoteForm">
-        <h1>Request a Fuel Quote</h1>
-        <div>
-            <label for="gallonsRequested">Gallons Requested:</label>
-            <input type="number" id="gallonsRequested" name="gallonsRequested" required>
-        </div>
-        <div>
-            <label for="deliveryAddress">Delivery Address:</label>
-            <input type="text" id="deliveryAddress" name="deliveryAddress" readonly>
-        </div>
-        <div>
-            <label for="deliveryDate">Delivery Date:</label>
-            <input type="date" id="deliveryDate" name="deliveryDate" required>
-        </div>
-        <div>
-            <label for="suggestedPrice">Suggested Price / gallon:</label>
-            <input type="number" id="suggestedPrice" name="suggestedPrice" readonly>
-        </div>
-        <div>
-            <label for="totalAmountDue">Total Amount Due:</label>
-            <input type="number" id="totalAmountDue" name="totalAmountDue" readonly>
-        </div>
-        <input type="submit" value="Submit Quote">
-        <input type="button" value="Clear" id="clearForm"> 
-        <input type="button" value="Load Profile" id="loadProfile"> 
-    </form>
+    <div class="fuel-quote-form-container">
+        <header class="top-bar">
+            <h1>Fuel Quote Form</h1>
+            <nav class="links">
+                <ul>
+                    <li><a href="FuelHistory.html"><button>View Fuel History</button></a></li>
+                    <li><a href="ProfileManage.html"><button>Profile</button></a></li>
+                </ul>
+            </nav>
+        </header>
+        <form id="fuelQuoteForm" class="fuel-quote-form">
+            <h1>Request a Fuel Quote</h1>
+            <div>
+                <label for="gallonsRequested">Gallons Requested:</label>
+                <input type="number" id="gallonsRequested" name="gallonsRequested" required>
+            </div>
+            <div>
+                <label for="deliveryAddress">Delivery Address:</label>
+                <input type="text" id="deliveryAddress" name="deliveryAddress" readonly>
+            </div>
+            <div>
+                <label for="deliveryDate">Delivery Date:</label>
+                <input type="date" id="deliveryDate" name="deliveryDate" required>
+            </div>
+            <div>
+                <label for="suggestedPrice">Suggested Price / gallon:</label>
+                <input type="number" id="suggestedPrice" name="suggestedPrice" readonly>
+            </div>
+            <div>
+                <label for="totalAmountDue">Total Amount Due:</label>
+                <input type="number" id="totalAmountDue" name="totalAmountDue" readonly>
+            </div>
+            <div class="button-row">
+                <input type="button" value="Clear" id="clearForm"> 
+                <input type="button" value="Load Profile" id="loadProfile">
+            </div>
+            <input type="submit" value="Submit Quote">
+        </form>
+    </div>
 </body>
 </html>
-
-
-
-<!--     
-    <template>
-        <tr>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-            <td></td>
-        </tr>
-    </template> 
--->
