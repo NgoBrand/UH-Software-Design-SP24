@@ -1,22 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/styles.css') }}">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Client Login</title>
+    <title>Client Register</title>
 </head>
 <body>
     <br>
-    <h1>Client Login</h1>
-    <form action="/login" method="post">
+    <h1>Client Register</h1>
+    <form action="/register" method="post">
         <label for="username">Username:</label>
         <input type="text" id="username" name="username" maxlength="60" required><br>
 
         <label for="password">Password:</label>
         <input type="password" id="password" name="password" maxlength="60" required><br>
 
-        <input type="submit" value="Login">
+        <label for="passwordConfirm">Confirm Password:</label>
+        <input type="password" id="passwordConfirm" name="passwordConfirm" maxlength="60" required><br>
+
+        <input type="submit" value="Register">
     </form>
 </body>
 </html>
