@@ -9,17 +9,21 @@
 <body>
     <br>
     <h1>Client Register</h1>
-    <form action="/register" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" maxlength="60" required><br>
+    <div class='container'>
+        <form action="/register" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" maxlength="60" required><br>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" maxlength="60" required><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" maxlength="60" required><br>
 
-        <label for="passwordConfirm">Confirm Password:</label>
-        <input type="password" id="passwordConfirm" name="passwordConfirm" maxlength="60" required><br>
+            <label for="passwordConfirm">Confirm Password:</label>
+            <input type="password" id="passwordConfirm" name="passwordConfirm" maxlength="60" required><br>
 
-        <input type="submit" value="Register">
-    </form>
+            <input type="submit" value="Register">
+        </form>
+        <br>
+        <a href="/login"><button>Login?</button></a>
+    </div>
 </body>
 </html>

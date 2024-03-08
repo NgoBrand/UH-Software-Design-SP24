@@ -1,4 +1,5 @@
-from flask import Flask, render_template
+from flask import Flask, redirect, render_template
+from flask.views import MethodView
 from flask_sqlalchemy import SQLAlchemy
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:///mydatabase.db"
@@ -31,14 +32,35 @@ class States(db.Model):
     state_code = db.Column(db.String(2), unique=True, nullable=False)
     state_name = db.Column(db.String(50), nullable=False)
 
-@app.route('/login')
+@app.route('/')
 def home():
+    return redirect('/login')
 
-    return render_template('Login.html')
+class Login(MethodView):
+    init_every_request = False
 
-@app.route('/register')
-def register():
-    return render_template('Register.html')
+    def __init__(self, model):
+        self.model = model
+
+    def get(self):
+        return render_template('Login.html')
+
+    def post(self):
+        # Log the client in and award them a session cookie given all the conditions are correct
+        return "", 200
+
+class Register(MethodView):
+    init_every_request = False
+
+    def __init__(self, model):
+        self.model = model
+
+    def get(self):
+        return render_template('Register.html')
+
+    def post(self):
+        # Add new client to database given all the conditions are correct
+        return "", 200
 
 if __name__ == '__main__':
     app.run(debug=True)

@@ -5,28 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Client Login</title>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script>
-        $(document).ready(function () {
-            // Redirect to register page when Register button is clicked
-            $('#registerButton').click(function () {
-                window.location.href = 'http://127.0.0.1:5000/register'; // Replace with your actual register page URL
-            });
-        });
-    </script>
 </head>
 <body>
     <br>
     <h1>Client Login</h1>
-    <form action="/login" method="post">
-        <label for="username">Username:</label>
-        <input type="text" id="username" name="username" maxlength="60" required><br>
+    <div class='container'>
+        <form action="/login" method="post">
+            <label for="username">Username:</label>
+            <input type="text" id="username" name="username" maxlength="60" required><br>
 
-        <label for="password">Password:</label>
-        <input type="password" id="password" name="password" maxlength="60" required><br>
+            <label for="password">Password:</label>
+            <input type="password" id="password" name="password" maxlength="60" required><br>
 
-        <input type="submit" value="Login">
-        <input type="button" id="registerButton" value="Register">
-    </form>
+            <input type="submit" value="Login">
+        </form>
+        <br>
+        <a href="/register"><button>Register?</button></a>
+    </div>
+
 </body>
 </html>
