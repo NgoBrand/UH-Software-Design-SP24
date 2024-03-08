@@ -39,9 +39,6 @@ def home():
 class Login(MethodView):
     init_every_request = False
 
-    def __init__(self, model):
-        self.model = model
-
     def get(self):
         return render_template('Login.html')
 
@@ -52,9 +49,6 @@ class Login(MethodView):
 class Register(MethodView):
     init_every_request = False
 
-    def __init__(self, model):
-        self.model = model
-
     def get(self):
         return render_template('Register.html')
 
@@ -63,4 +57,6 @@ class Register(MethodView):
         return "", 200
 
 if __name__ == '__main__':
+    app.add_url_rule("/register", view_func=Register.as_view("Register"))
+    app.add_url_rule("/login", view_func=Login.as_view("Login"))
     app.run(debug=True)
