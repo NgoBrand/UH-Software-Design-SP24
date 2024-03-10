@@ -11,6 +11,16 @@
     <h1>Client Login</h1>
     <div class='container'>
         <form action="/login" method="post">
+            {%if success%}
+            <p class='success'>
+                {{success}}
+            </p>
+            {%elif error%}
+            <p class='error'>
+                {{error}}
+            </p>
+            {%endif%}
+            
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" maxlength="60" required><br>
 

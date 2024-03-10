@@ -8,9 +8,20 @@
 </head>
 <body>
     <br>
+    
     <h1>Client Register</h1>
     <div class='container'>
         <form action="/register" method="post">
+            {%if success%}
+            <p class='success'>
+                {{success}}
+            </p>
+            {%elif error%}
+            <p class='error'>
+                {{error}}
+            </p>
+            {%endif%}
+
             <label for="username">Username:</label>
             <input type="text" id="username" name="username" maxlength="60" required><br>
 
