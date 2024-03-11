@@ -1,3 +1,4 @@
+from unittest.mock import patch
 from app import app
 from models import db, UserCredentials
 from views import add_endpoints
@@ -39,6 +40,37 @@ def test_register_get(client):
 
     # Check if login page was requested
     assert b'Register' in response.data
+
+def test_profile_get(client):
+    # Perform profile request
+    response = client.get('/profile', follow_redirects=True)
+
+    # Check if profile page was requested
+    assert b'Profile' in response.data
+
+def test_profile_post(client):
+    with app.test_client() as client:
+        with client.session_transaction() as session:
+            session['username'] = 'testuser'
+
+        form_data = {
+            'full_name': 'John Doe',
+            'address1': '123 Main St',
+            'address2': 'Apt 4B',
+            'city': 'Springfield',
+            'state': 'IL',
+            'zipcode': '12345'
+        }
+
+        with patch('myapp.UserCredentials.query.filter_by') as mock_filter_by:
+            mock_filter_by.return_value.first.return_value = None
+
+            response = client.post('/profile', data=form_data, follow_redirects=True)
+
+            # Assertions
+            assert response.status_code == 200
+            assert b'Entered New Profile' in response.data
+
 
 def test_login_success(client):
     # Create a test user
