@@ -19,6 +19,9 @@ class Login(MethodView):
             if user.first_login:
                 # Redirect to the profile management page
                 return redirect('/profile')
+            else:
+                # Redirect to the home page
+                return redirect('/home')
         else:
             # Invalid credentials, render the login page again with an error message
             return render_template('Login.html', error="Invalid username or password")
@@ -87,13 +90,49 @@ class Profile(MethodView):
             new_profile.state = state
             new_profile.zipcode = zipcode
             db.session.add(new_profile)
+            user.client_info_id = new_profile.id 
             db.session.commit()
-            return "Entered New Profile"
+            return redirect('/home')
+        else:
+            return redirect('/login')
+
+class Home(MethodView):
+    init_every_request = False
+
+    def get(self):
+        if 'username' in session:
+            # Get the logged-in user's username
+            user_credentials = UserCredentials.query.filter_by(username=session['username']).first()
+
+            if user_credentials:
+                # Get the associated client_info_id
+                client_info_id = user_credentials.client_info_id
+
+                # Query the ClientInformation table based on the client_info_id
+                client_info = ClientInformation.query.filter_by(id=client_info_id).first()
+
+                if client_info:
+                    # Assuming ClientInformation has fields like 'full_name', 'address1', 'state', 'zipcode'
+                    name = client_info.full_name
+                    address1 = client_info.address1
+                    address2 = client_info.address2 or ""  # Use empty string if address2 is None
+                    state = client_info.state
+                    zip_code = client_info.zipcode
+
+                    # Render the template with user information
+                    return render_template('Home.html', name=name, address1=address1, address2 = address2, state=state, zip_code=zip_code)
+                else:
+                    # Handle case where client information is not found
+                    return "Client information not found."
+            else:
+                # Handle case where user credentials are not found
+                return "User credentials not found."
         else:
             return redirect('/login')
 
 def add_endpoints(app):
     app.add_url_rule("/register", view_func=Register.as_view("Register"))
     app.add_url_rule("/profile", view_func=Profile.as_view("Profile"))
+    app.add_url_rule("/home", view_func=Home.as_view("Home"))
     app.add_url_rule("/login", view_func=Login.as_view("Login"))
     app.add_url_rule("/logout", view_func=Logout.as_view("Logout"))

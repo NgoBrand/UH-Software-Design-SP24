@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Fuel Management System</title>
+    <style>
+        /* Add your custom CSS styles here */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: #333;
+        }
+        .user-info {
+            margin-bottom: 20px;
+        }
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+        }
+        .button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #ffffff;
+            border: none;
+            border-radius: 3px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <form action = "/home" method = "post">
+    <div class="container">
+        <h1>Welcome, {{name}}!</h1>
+        <div class="user-info">
+            <p><strong>Address 1:</strong> {{address1}}</p>
+            <p><strong>Address 2:</strong> {{address2}}</p>
+            <p><strong>State:</strong> {{state}}</p>
+            <p><strong>Zip Code:</strong> {{zip_code}}</p>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="redirectToHistory()">Fuel Quote History</button>
+            <button class="button" onclick="redirectToNewQuote()">Create New Fuel Quote</button>
+        </div>
+    </div>
+    </form>
+</body>
+</html>
