@@ -21,7 +21,7 @@ class Login(MethodView):
                 return redirect('/profile')
             else:
                 # Redirect to the home page
-                return redirect('/home')
+                return redirect('/')
         else:
             # Invalid credentials, render the login page again with an error message
             return render_template('Login.html', error="Invalid username or password")
@@ -74,7 +74,7 @@ class Profile(MethodView):
     def post(self):
         if 'username' in session:
             user = UserCredentials.query.filter_by(username=session['username']).first()
-            full_name = request.form.get('full_name')
+            full_name = request.form.get('fullName')
             address1 = request.form.get('address1')
             address2 = request.form.get('address2')
             city = request.form.get('city')
@@ -83,6 +83,7 @@ class Profile(MethodView):
             user.first_login = False
 
             new_profile = ClientInformation()
+            new_profile.user_id = user.id
             new_profile.full_name = full_name
             new_profile.address1 = address1
             new_profile.address2 = address2
@@ -90,9 +91,8 @@ class Profile(MethodView):
             new_profile.state = state
             new_profile.zipcode = zipcode
             db.session.add(new_profile)
-            user.client_info_id = new_profile.id 
             db.session.commit()
-            return redirect('/home')
+            return redirect('/')
         else:
             return redirect('/login')
 
@@ -105,11 +105,9 @@ class Home(MethodView):
             user_credentials = UserCredentials.query.filter_by(username=session['username']).first()
 
             if user_credentials:
-                # Get the associated client_info_id
-                client_info_id = user_credentials.client_info_id
 
                 # Query the ClientInformation table based on the client_info_id
-                client_info = ClientInformation.query.filter_by(id=client_info_id).first()
+                client_info = ClientInformation.query.filter_by(user_id=user_credentials.id).first()
 
                 if client_info:
                     # Assuming ClientInformation has fields like 'full_name', 'address1', 'state', 'zipcode'
@@ -133,6 +131,6 @@ class Home(MethodView):
 def add_endpoints(app):
     app.add_url_rule("/register", view_func=Register.as_view("Register"))
     app.add_url_rule("/profile", view_func=Profile.as_view("Profile"))
-    app.add_url_rule("/home", view_func=Home.as_view("Home"))
+    app.add_url_rule("/", view_func=Home.as_view("Home"))
     app.add_url_rule("/login", view_func=Login.as_view("Login"))
     app.add_url_rule("/logout", view_func=Logout.as_view("Logout"))
