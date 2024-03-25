@@ -6,7 +6,6 @@ class UserCredentials(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(50), unique=True)
     password = db.Column(db.String(255), nullable=False)
-    first_login = db.Column(db.Boolean, default=True)
 
 class ClientInformation(db.Model):
     user_id = db.Column(db.Integer, db.ForeignKey('user_credentials.id'), primary_key=True)

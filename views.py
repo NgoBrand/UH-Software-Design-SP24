@@ -16,7 +16,10 @@ class Login(MethodView):
 
         if user and user.password == password:
             session['username'] = username # This is stored as a signed browser cookie
-            if user.first_login:
+
+            client_info = ClientInformation.query.filter_by(user_id=user.id).first()
+
+            if not client_info:
                 # Redirect to the profile management page
                 return redirect('/profile')
             else:
@@ -80,18 +83,27 @@ class Profile(MethodView):
             city = request.form.get('city')
             state = request.form.get('state')
             zipcode = request.form.get('zipcode')
-            user.first_login = False
 
-            new_profile = ClientInformation()
-            new_profile.user_id = user.id
-            new_profile.full_name = full_name
-            new_profile.address1 = address1
-            new_profile.address2 = address2
-            new_profile.city = city
-            new_profile.state = state
-            new_profile.zipcode = zipcode
-            db.session.add(new_profile)
-            db.session.commit()
+            client_info = ClientInformation.query.filter_by(user_id=user.id).first()
+            if not client_info:
+                new_profile = ClientInformation()
+                new_profile.user_id = user.id
+                new_profile.full_name = full_name
+                new_profile.address1 = address1
+                new_profile.address2 = address2
+                new_profile.city = city
+                new_profile.state = state
+                new_profile.zipcode = zipcode
+                db.session.add(new_profile)
+                db.session.commit()
+            else:
+                client_info.full_name = full_name
+                client_info.address1 = address1
+                client_info.address2 = address2
+                client_info.city = city
+                client_info.state = state
+                client_info.zipcode = zipcode
+                db.session.commit()
             return redirect('/')
         else:
             return redirect('/login')
