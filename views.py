@@ -1,6 +1,6 @@
 from flask import session, redirect, render_template, request
 from flask.views import MethodView
-from models import db, UserCredentials, ClientInformation
+from models import db, UserCredentials, ClientInformation, FuelQuote
 
 class Login(MethodView):
     init_every_request = False
@@ -139,6 +139,40 @@ class Home(MethodView):
                 return "User credentials not found."
         else:
             return redirect('/login')
+        
+class History(MethodView):
+    init_every_request = False
+
+    def get(self):
+        if 'username' in session:
+            # Get the logged-in user's username
+            user_credentials = UserCredentials.query.filter_by(username=session['username']).first()
+
+            if user_credentials:
+
+                # Query the FuelQuote table based on the client_info_id
+                fuel_quote = FuelQuote.query.filter_by(user_id=user_credentials.id).order_by(FuelQuote.delivery_date).all()
+
+                if fuel_quote:
+                    gallonsRequested = fuel_quote.gallons_requested 
+                    deliveryAddress = fuel_quote.delivery_address 
+                    deliveryDate = fuel_quote.delivery_date 
+                    pricePerGallon = fuel_quote.suggested_price_per_gallon 
+                    total = fuel_quote.total_amount_due 
+
+                    # Render the template with user information
+                    return render_template('FuelHistory.html', gallonsRequested=gallonsRequested, deliveryAddress=deliveryAddress, deliveryDate=deliveryDate, pricePerGallon=pricePerGallon, total=total )
+                else:
+                    # Handle case where client information is not found
+                    return "No History Found"
+            else:
+                # Handle case where user credentials are not found
+                return "User credentials not found."
+        else:
+            return redirect('/login')
+
+    
+
 
 def add_endpoints(app):
     app.add_url_rule("/register", view_func=Register.as_view("Register"))
@@ -146,3 +180,4 @@ def add_endpoints(app):
     app.add_url_rule("/", view_func=Home.as_view("Home"))
     app.add_url_rule("/login", view_func=Login.as_view("Login"))
     app.add_url_rule("/logout", view_func=Logout.as_view("Logout"))
+    app.add_url_rule("/history", view_func=History.as_view("History"))
