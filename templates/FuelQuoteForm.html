@@ -5,26 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Quote Form</title>
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            document.getElementById('loadProfile').addEventListener('click', function() {
-                // loads delivery address, supposed to get from profilemanage.html
-                const clientProfile = JSON.parse(localStorage.getItem('clientProfile'));
-                if (clientProfile) {
-                    const fullAddress = `${clientProfile.address1}, ` +
-                                        `${clientProfile.address2 ? clientProfile.address2 + ', ' : ''}` +
-                                        `${clientProfile.city}, ${clientProfile.state} ` +
-                                        `${clientProfile.zipcode}`;
-                    document.getElementById('deliveryAddress').value = fullAddress;
-                }
-            });
-            document.getElementById('clearForm').addEventListener('click', function() {
-                document.getElementById('fuelQuoteForm').reset();
-                // able to clear current profile
-                // localStorage.removeItem('clientProfile');
-            });
-        });
-    </script>
 </head>
 <body>
     <div class="fuel-quote-form-container">
@@ -37,7 +17,7 @@
                 </ul>
             </nav>
         </header>
-        <form id="fuelQuoteForm" class="fuel-quote-form">
+        <form id="fuelQuoteForm" class="fuel-quote-form" action="/fuel_quote" method="post">
             <h1>Request a Fuel Quote</h1>
             <div>
                 <label for="gallonsRequested">Gallons Requested:</label>
@@ -60,11 +40,42 @@
                 <input type="number" id="totalAmountDue" name="totalAmountDue" readonly>
             </div>
             <div class="button-row">
-                <input type="button" value="Clear" id="clearForm"> 
+                <input type="button" value="Clear" id="clearForm">
                 <input type="button" value="Load Profile" id="loadProfile">
             </div>
             <input type="submit" value="Submit Quote">
         </form>
     </div>
+
+<script>
+document.getElementById('loadProfile').addEventListener('click', function(event) {
+    event.preventDefault();
+    fetch('/get_profile_data', {
+        method: 'GET',
+        headers: {
+            'Content-Type': 'application/json'
+        }
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('deliveryAddress').value = data.deliveryAddress;
+    })
+    .catch(error => console.error('Error loading profile:', error));
+});
+
+document.getElementById('gallonsRequested').addEventListener('input', function(event) {
+    const value = this.value;
+    if (value < 1) {
+        this.setCustomValidity('Gallons requested must be at least 1.');
+    } else {
+        this.setCustomValidity('');
+    }
+});
+
+document.getElementById('clearForm').addEventListener('click', function() {
+    document.getElementById('fuelQuoteForm').reset();
+
+});
+</script>
 </body>
 </html>

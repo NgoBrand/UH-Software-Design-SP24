@@ -1,6 +1,7 @@
-from flask import session, redirect, render_template, request
+from flask import Flask, session, redirect, render_template, request, url_for,flash, jsonify,
 from flask.views import MethodView
-from models import db, UserCredentials, ClientInformation
+from models import db, UserCredentials, ClientInformation, FuelQuote
+from datetime import datetime
 
 class Login(MethodView):
     init_every_request = False
@@ -140,9 +141,90 @@ class Home(MethodView):
         else:
             return redirect('/login')
 
+# New View for Fuel Quote Form
+class FuelQuoteForm(MethodView):
+    def get(self):
+        # Assuming you might want to pre-fill some data or handle the form in some way
+        if 'username' not in session:
+            return redirect('/login')
+        return render_template('FuelQuoteForm.html')
+
+    def post(self):
+        if 'username' not in session:
+            flash('You need to be logged in to submit a quote.', 'error')
+            return redirect('/login')
+
+        gallons_requested = request.form.get('gallonsRequested', type=int)
+        delivery_date = request.form.get('deliveryDate')
+
+        # Validate inputs
+        if not gallons_requested or gallons_requested <= 0:
+            flash('Invalid number of gallons requested.', 'error')
+            return redirect(url_for('fuel_quote'))
+        try:
+            delivery_date = datetime.strptime(delivery_date, '%Y-%m-%d')
+        except ValueError:
+            flash('Invalid delivery date format.', 'error')
+            return redirect(url_for('fuel_quote'))
+
+        user = UserCredentials.query.filter_by(username=session['username']).first()
+        client_info = ClientInformation.query.filter_by(user_id=user.id).first()
+
+        # Example pricing calculation logic
+        suggested_price = 2.50  # Placeholder for actual pricing algorithm
+        total_amount_due = suggested_price * gallons_requested
+
+        new_quote = FuelQuote(
+            user_id=user.id,
+            gallons_requested=gallons_requested,
+            delivery_address=client_info.address1,
+            delivery_date=delivery_date,
+            suggested_price=suggested_price,
+            total_amount_due=total_amount_due
+        )
+        db.session.add(new_quote)
+        db.session.commit()
+
+        flash('Fuel quote submitted successfully!', 'success')
+        return redirect(url_for('fuel_history'))
+
+
+# Implementing /get_profile_data endpoint
+@app.route('/get_profile_data', methods=['GET'])
+def get_profile_data():
+    if 'username' not in session:
+        return jsonify({'error': 'Not logged in'}), 401
+
+    user = UserCredentials.query.filter_by(username=session['username']).first()
+    client_info = ClientInformation.query.filter_by(user_id=user.id).first()
+
+    if client_info:
+        profile_data = {
+            "deliveryAddress": client_info.address1
+        }
+        return jsonify(profile_data)
+    else:
+        return jsonify({'error': 'Profile data not found'}), 404
+
+
+# New View for Fuel History
+class FuelHistory(MethodView):
+    def get(self):
+        return render_template('FuelHistory.html')
+
+
+
 def add_endpoints(app):
     app.add_url_rule("/register", view_func=Register.as_view("Register"))
     app.add_url_rule("/profile", view_func=Profile.as_view("Profile"))
     app.add_url_rule("/", view_func=Home.as_view("Home"))
     app.add_url_rule("/login", view_func=Login.as_view("Login"))
     app.add_url_rule("/logout", view_func=Logout.as_view("Logout"))
+    # Adding new endpoints for fuel quote form and history
+    app.add_url_rule("/fuel_quote", view_func=FuelQuoteForm.as_view("fuel_quote"))
+    app.add_url_rule("/fuel_history", view_func=FuelHistory.as_view("fuel_history"))
+
+add_endpoints(app)
+
+if __name__ == "__main__":
+    app.run(debug=True)
