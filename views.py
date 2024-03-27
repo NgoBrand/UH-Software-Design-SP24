@@ -2,7 +2,7 @@ from flask import session, redirect, render_template, request, flash, url_for
 from flask.views import MethodView
 from models import db, UserCredentials, ClientInformation, FuelQuote
 from datetime import datetime
-
+import decimal
 
 class Login(MethodView):
     init_every_request = False
@@ -186,13 +186,25 @@ class FuelQuoteForm(MethodView):
             flash('User session expired.', 'error')
             return redirect(url_for('Login'))
 
+        # Assuming you have a method to calculate these or they are being set somehow
+        suggested_price_per_gallon = request.form.get('suggestedPrice', '0')
+        total_amount_due = request.form.get('totalAmountDue', '0')
+
+        # Convert to float, or handle the case where the conversion fails
+        try:
+            suggested_price_per_gallon = float(suggested_price_per_gallon) if suggested_price_per_gallon else 0.0
+            total_amount_due = float(total_amount_due) if total_amount_due else 0.0
+        except ValueError:
+            flash('Invalid input for price or total amount.', 'error')
+            return redirect(url_for('FuelQuoteForm'))
+
         delivery_date = datetime.strptime(request.form['deliveryDate'], '%Y-%m-%d')
         new_quote = FuelQuote(
             gallons_requested=request.form['gallonsRequested'],
             delivery_address=request.form['deliveryAddress'],
             delivery_date=delivery_date,
-            suggested_price_per_gallon=request.form['suggestedPrice'],
-            total_amount_due=request.form['totalAmountDue'],
+            suggested_price_per_gallon=decimal.Decimal(suggested_price_per_gallon),
+            total_amount_due=decimal.Decimal(total_amount_due),
             user_id=user.id
         )
         db.session.add(new_quote)
