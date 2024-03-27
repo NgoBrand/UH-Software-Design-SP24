@@ -66,27 +66,43 @@ def test_get_without_username(client):
 
 
 def test_profile_post(client):
-    with app.test_client() as client:
+    # Create a user in the database for the test
+    with client.application.app_context():
+        test_user = UserCredentials(username='testuser', password='testpass')
+        db.session.add(test_user)
+        db.session.commit()
+
+        # Now, within the same app context, perform the rest of the test
+        # Simulate a user being logged in
         with client.session_transaction() as session:
             session['username'] = 'testuser'
 
+        # Simulate form data for updating the profile
         form_data = {
-            'full_name': 'John Doe',
-            'address1': '123 Main St',
-            'address2': 'Apt 4B',
-            'city': 'Springfield',
-            'state': 'IL',
+            'fullName': 'Test User',
+            'address1': '123 Test St',
+            'address2': '',
+            'city': 'Testville',
+            'state': 'TS',
             'zipcode': '12345'
         }
 
-        with patch('myapp.UserCredentials.query.filter_by') as mock_filter_by:
-            mock_filter_by.return_value.first.return_value = None
+        # Send a POST request with the form data
+        response = client.post('/profile', data=form_data, follow_redirects=True)
 
-            response = client.post('/profile', data=form_data, follow_redirects=True)
+        # Check if the client was redirected to the home page
+        assert response.request.path == '/'
 
-            # Assertions
-            assert response.status_code == 200
-            assert b'Entered New Profile' in response.data
+        # Retrieve the updated profile from the database
+        updated_profile = ClientInformation.query.filter_by(user_id=test_user.id).first()
+
+        # Verify that the profile was updated with the form data
+        assert updated_profile.full_name == form_data['fullName']
+        assert updated_profile.address1 == form_data['address1']
+        assert updated_profile.address2 == form_data['address2']
+        assert updated_profile.city == form_data['city']
+        assert updated_profile.state == form_data['state']
+        assert updated_profile.zipcode == form_data['zipcode']
 
 
 def test_login_success(client):
