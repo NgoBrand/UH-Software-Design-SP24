@@ -218,36 +218,27 @@ class History(MethodView):
 
     def get(self):
         if 'username' in session:
-            # Get the logged-in user's username
             user_credentials = UserCredentials.query.filter_by(username=session['username']).first()
-
             if user_credentials:
+                fuel_quotes = FuelQuote.query.filter_by(user_id=user_credentials.id).order_by(FuelQuote.delivery_date).all()
 
-                # Query the FuelQuote table based on the client_info_id
-                fuel_quote = FuelQuote.query.filter_by(user_id=user_credentials.id).order_by(
-                    FuelQuote.delivery_date).all()
+                # Prepare the data for rendering
+                quotes_data = [{
+                    'gallonsRequested': quote.gallons_requested,
+                    'deliveryAddress': quote.delivery_address,
+                    'deliveryDate': quote.delivery_date.strftime('%Y-%m-%d'),  # Format date for display
+                    'pricePerGallon': "{:.2f}".format(quote.suggested_price_per_gallon),
+                    'total': "{:.2f}".format(quote.total_amount_due)
+                } for quote in fuel_quotes]
 
-                if fuel_quote:
-                    gallonsRequested = fuel_quote.gallons_requested
-                    deliveryAddress = fuel_quote.delivery_address
-                    deliveryDate = fuel_quote.delivery_date
-                    pricePerGallon = fuel_quote.suggested_price_per_gallon
-                    total = fuel_quote.total_amount_due
-
-                    # Render the template with user information
-                    return render_template('FuelHistory.html', gallonsRequested=gallonsRequested,
-                                           deliveryAddress=deliveryAddress, deliveryDate=deliveryDate,
-                                           pricePerGallon=pricePerGallon, total=total)
-                else:
-                    # Handle case where no history is found
-                    # Placeholder until database is complete
-                    # return "No History Found"
-                    return render_template('FuelHistory.html')
+                return render_template('FuelHistory.html', quotes_data=quotes_data)
             else:
-                # Handle case where user credentials are not found
-                return "User credentials not found."
+                flash('User credentials not found.', 'error')
+                return redirect('/login')
         else:
+            flash('Please log in to view fuel history.', 'error')
             return redirect('/login')
+
 
 
 def add_endpoints(app):

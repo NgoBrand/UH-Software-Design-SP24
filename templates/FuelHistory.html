@@ -12,36 +12,45 @@
         <h1 class="history-header">Fuel Quote History</h1>
         <nav>
             <ul class="links">
-                <li><a href="/fuel_quote_form" ><button>Buy</button></a></li>
+                <li><a href="/fuel_quote_form"><button>Buy</button></a></li>
                 <li><a href="/"><button>Profile</button></a></li>
             </ul>
         </nav>
     </header>
 
-    
-
     <section>
-    <table class="history-table">
-        <thead>
-            <tr>
-                <th>Gallons Request</th>
-                <th>Delivery Address</th>
-                <th>Delivery Date</th>
-                <th>Price/Gallon</th>
-                <th>Total</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr>
-                <td>{{gallonsRequested}}</td>
-                <td>{{deliveryAddress}}</td>
-                <td>{{deliveryDate}}</td>
-                <td>{{pricePerGallon}}</td>
-                <td>{{total}}</td>
-            </tr>
-        </tbody>
-    </table>
+        <table class="history-table">
+            <thead>
+                <tr>
+                    <th>Gallons Request</th>
+                    <th>Delivery Address</th>
+                    <th>Delivery Date</th>
+                    <th>Price/Gallon</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for quote in quotes_data %}
+                <tr>
+                    <td>{{ quote['gallonsRequested'] }}</td>
+                    <td>{{ quote['deliveryAddress'] }}</td>
+                    <td>{{ quote['deliveryDate'] }}</td>
+                    <td>${{ quote['pricePerGallon'] }}</td>
+                    <td>${{ quote['total'] }}</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">No fuel quotes found.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
     </section>
+
+</body>
+</html>
+
+
 
 <!--     
     <template>
