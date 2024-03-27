@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>My Fuel Management System</title>
     <style>
+        /* Add your custom CSS styles here */
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -40,6 +41,7 @@
     </style>
 </head>
 <body>
+    <form action = "/home" method = "post">
     <div class="container">
         <h1>Welcome, {{name}}!</h1>
         <div class="user-info">
@@ -49,13 +51,14 @@
             <p><strong>Zip Code:</strong> {{zip_code}}</p>
         </div>
         <div class="button-container">
-            <form action="/fuel_history" method="get">
-                <button type="submit" class="button">Fuel Quote History</button>
-            </form>
-            <form action="/fuel_quote" method="get">
-                <button type="submit" class="button">Create New Fuel Quote</button>
-            </form>
+            <button class="button" onclick="redirectToHistory()">Fuel Quote History</button>
+            <a href="{{ url_for('FuelQuoteForm') }}">Create New Fuel Quote</a>
+
         </div>
     </div>
+    </form>
 </body>
 </html>
+<!--
+
+-->

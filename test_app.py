@@ -1,7 +1,8 @@
 from unittest.mock import patch
 from app import app
-from models import db, UserCredentials
+from models import db, UserCredentials, FuelQuote
 from views import add_endpoints
+from datetime import date
 import pytest
 
 started = False
@@ -44,6 +45,13 @@ def test_register_get(client):
 def test_profile_get(client):
     # Perform profile request
     response = client.get('/profile', follow_redirects=True)
+
+    # Check if profile page was requested
+    assert b'Profile' in response.data
+
+def test_history_get(client):
+    # Perform profile request
+    response = client.get('/history', follow_redirects=True)
 
     # Check if profile page was requested
     assert b'Profile' in response.data
@@ -166,3 +174,70 @@ def test_logout(client):
 
     # Check if logout was successful and user is redirected to the login page
     assert b'Login' in response.data and b'Login' in response2.data
+
+def test_fuel_quote_form_get(client):
+    # Perform a GET request to load the Fuel Quote Form
+    response = client.get('/fuel_quote_form', follow_redirects=True)
+
+    # Check if the Fuel Quote Form page was requested successfully
+    assert b'Fuel Quote Form' in response.data
+
+def test_direct_fuel_quote_insertion(client):
+    with app.app_context():
+        test_user = UserCredentials(username='directinsertuser', password='testpassword')
+        db.session.add(test_user)
+        db.session.commit()
+
+        new_quote = FuelQuote(
+            gallons_requested=100,
+            delivery_address='Direct Insert Address',
+            delivery_date=date(2023, 1, 1),
+            suggested_price_per_gallon=2.50,
+            total_amount_due=250,
+            user_id=test_user.id
+        )
+        db.session.add(new_quote)
+        db.session.commit()
+
+        assert FuelQuote.query.count() == 1, "Direct FuelQuote record was not created through direct insertion."
+
+
+def test_fuel_quote_form_post_success(client):
+    # Initial user creation and commit.
+    with app.app_context():
+        test_user = UserCredentials(username='testuser', password='testpassword')
+        db.session.add(test_user)
+        db.session.commit()
+
+    # Refetch the user within the test client context to ensure it's attached to the current session.
+    with app.app_context():
+        test_user_attached = UserCredentials.query.filter_by(username='testuser').first()
+
+    # Ensure you are logged in as the test user. Adjust according to your app's session handling.
+    with client.session_transaction() as session:
+        session['username'] = test_user_attached.username
+
+    form_data = {
+        'gallonsRequested': '100',
+        'deliveryAddress': '123 Main St',
+        'deliveryDate': '2023-01-01',
+        'suggested_price_per_gallon': '2.50',
+        'totalAmountDue': '250',
+    }
+
+    # Submit the form.
+    response = client.post('/fuel_quote_form', data=form_data, follow_redirects=True)
+
+    # Assertions to verify the FuelQuote record creation.
+    with app.app_context():
+        fuel_quote = FuelQuote.query.first()
+        assert fuel_quote is not None, "FuelQuote record was not created"
+        assert fuel_quote.gallons_requested == 100
+        assert fuel_quote.delivery_address == '223 Main St'
+
+
+
+
+
+
+

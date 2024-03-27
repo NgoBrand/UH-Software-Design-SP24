@@ -16,19 +16,19 @@ class ClientInformation(db.Model):
     state = db.Column(db.String(2), nullable=False)  # State code (e.g., "TX")
     zipcode = db.Column(db.String(9), nullable=False)
 
+#Fuel quote
 class FuelQuote(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    gallons_requested = db.Column(db.Integer, nullable=False)
-    delivery_address = db.Column(db.String(255), nullable=False)
-    delivery_date = db.Column(db.DateTime, nullable=False)
-    suggested_price = db.Column(db.Float, nullable=False)
+    gallons_requested = db.Column(db.Float, nullable=False)
+    delivery_address = db.Column(db.String(100), nullable=False)
+    delivery_date = db.Column(db.Date, nullable=False)
+    suggested_price_per_gallon = db.Column(db.Float, nullable=False)
     total_amount_due = db.Column(db.Float, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user_credentials.id'), nullable=False)
+
+
+
 
 class States(db.Model):
     state_code = db.Column(db.String(2), primary_key=True)  # Set state_code as primary key
     state_name = db.Column(db.String(50), nullable=False)
-
-# PLACE HOLDER ONLY
-class PricingModule:
-    def __init__(self):
-        pass  # Future implementation
