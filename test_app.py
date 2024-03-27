@@ -50,11 +50,11 @@ def test_profile_get(client):
     assert b'Profile' in response.data
 
 def test_history_get(client):
-    # Perform profile request
+    # Perform history request
     response = client.get('/history', follow_redirects=True)
 
-    # Check if profile page was requested
-    assert b'Profile' in response.data
+    # Check if history page was requested
+    assert b'History' in response.data
 
 def test_profile_post(client):
     with app.test_client() as client:

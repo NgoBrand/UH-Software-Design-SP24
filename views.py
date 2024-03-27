@@ -227,8 +227,10 @@ class History(MethodView):
                                            deliveryAddress=deliveryAddress, deliveryDate=deliveryDate,
                                            pricePerGallon=pricePerGallon, total=total)
                 else:
-                    # Handle case where client information is not found
-                    return "No History Found"
+                    # Handle case where no history is found
+                    # Placeholder until database is complete
+                    # return "No History Found"
+                    return render_template('FuelHistory.html')
             else:
                 # Handle case where user credentials are not found
                 return "User credentials not found."
