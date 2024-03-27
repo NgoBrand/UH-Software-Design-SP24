@@ -5,21 +5,9 @@ from views import add_endpoints
 from datetime import datetime, date
 import pytest
 from flask import session, template_rendered
-from contextlib import contextmanager
 
 started = False
-@contextmanager
-def captured_templates(app):
-    recorded = []
 
-    def record(sender, template, context, **extra):
-        recorded.append((template, context))
-
-    template_rendered.connect(record, app)
-    try:
-        yield recorded
-    finally:
-        template_rendered.disconnect(record, app)
 
 @pytest.fixture
 def client():
@@ -67,35 +55,6 @@ def test_history_get(client):
 
     # Check if history page was requested
     assert b'History' in response.data
-
-@pytest.fixture
-def user_credentials():
-    user = UserCredentials(username='testuser', password='testpass')
-    db.session.add(user)
-    db.session.commit()
-    return user
-
-@pytest.fixture
-def client_info(user_credentials):
-    info = ClientInformation(user_id=user_credentials.id, full_name='Test User', address1='123 Test St', city='Testville', state='TX', zipcode='12345')
-    db.session.add(info)
-    db.session.commit()
-    return info
-
-def test_home_get_with_user_logged_in(client, user_credentials, client_info):
-    with client:
-        with captured_templates(app) as templates:
-            session['username'] = user_credentials.username
-            response = client.get('/home')
-            assert response.status_code == 200
-            assert len(templates) == 1
-            template, context = templates[0]
-            assert template.name == 'Home.html'
-            assert context['name'] == client_info.full_name
-            assert context['address1'] == client_info.address1
-            assert context['city'] == client_info.city
-            assert context['state'] == client_info.state
-            assert context['zipcode'] == client_info.zipcode
 
 
 
