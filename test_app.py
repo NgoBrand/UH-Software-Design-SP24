@@ -1,12 +1,25 @@
-from unittest.mock import patch
+from unittest.mock import patch, Mock
 from app import app
-from models import db, UserCredentials, FuelQuote
+from models import db, UserCredentials, FuelQuote, ClientInformation
 from views import add_endpoints
 from datetime import datetime, date
 import pytest
+from flask import session, template_rendered
+from contextlib import contextmanager
 
 started = False
+@contextmanager
+def captured_templates(app):
+    recorded = []
 
+    def record(sender, template, context, **extra):
+        recorded.append((template, context))
+
+    template_rendered.connect(record, app)
+    try:
+        yield recorded
+    finally:
+        template_rendered.disconnect(record, app)
 @pytest.fixture
 def client():
     app.config['TESTING'] = True
@@ -43,10 +56,8 @@ def test_register_get(client):
     assert b'Register' in response.data
 
 def test_profile_get(client):
-    # Perform profile request
     response = client.get('/profile', follow_redirects=True)
 
-    # Check if profile page was requested
     assert b'Profile' in response.data
 
 def test_history_get(client):
@@ -55,6 +66,34 @@ def test_history_get(client):
 
     # Check if history page was requested
     assert b'History' in response.data
+
+def test_get_home_with_full_data(client):
+    with client.session_transaction() as sess:
+        sess['username'] = 'testuser'
+
+    UserCredentials.query.filter_by.return_value.first.return_value = Mock(id=1, username='testuser')
+    ClientInformation.query.filter_by.return_value.first.return_value = Mock(
+        user_id=1, full_name='John Doe', address1='123 Main St', address2=None, state='TX', zipcode='77001'
+    )
+
+    with captured_templates(app) as templates:
+        response = client.get('/')
+        assert response.status_code == 200
+        assert len(templates) == 1
+        template, context = templates[0]
+        assert template.name == 'Home.html'
+        assert context['name'] == 'John Doe'
+        assert context['address1'] == '123 Main St'
+        assert context['address2'] == ''
+        assert context['state'] == 'TX'
+        assert context['zip_code'] == '77001'
+
+# Test when username is not in session
+def test_get_without_username(client):
+    response = client.get('/')
+    assert response.status_code == 302
+    assert response.location == '/login'
+
 
 def test_profile_post(client):
     with app.test_client() as client:
