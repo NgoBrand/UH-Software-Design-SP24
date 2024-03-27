@@ -1,10 +1,8 @@
-from unittest.mock import patch, Mock
 from app import app
 from models import db, UserCredentials, FuelQuote, ClientInformation
 from views import add_endpoints
 from datetime import datetime, date
 import pytest
-from flask import session, template_rendered
 
 started = False
 
@@ -105,23 +103,28 @@ def test_profile_post(client):
         assert updated_profile.zipcode == form_data['zipcode']
 
 
-def test_login_success(client):
+def test_login_success_existing_profile(client):
     # Create a test user
-    test_user = UserCredentials()
-    test_user.username = 'testuser'
-    test_user.password = 'testpassword'
+    test_user = UserCredentials(username='testuser', password='testpass')
+
     with app.app_context():
         db.session.add(test_user)
         db.session.commit()
+        test_profile = ClientInformation(user_id=test_user.id, full_name='Test User', 
+                                        address1='123 Test St', city='Testville', 
+                                        state='TS', zipcode='12345')
+        # Add and commit test_profile to the database
+        with app.app_context():
+            db.session.add(test_profile)
+            db.session.commit()
+        # Perform login request
+        response = client.post('/login', data={
+            'username': 'testuser',
+            'password': 'testpass'
+        }, follow_redirects=True)
 
-    # Perform login request
-    response = client.post('/login', data={
-        'username': 'testuser',
-        'password': 'testpassword'
-    }, follow_redirects=True)
-
-    # Check if login was successful
-    assert b'Welcome' in response.data
+        # Check if login was successful
+        assert response.request.path == '/'
 
 def test_login_failure(client):
     # Perform login request with incorrect credentials
