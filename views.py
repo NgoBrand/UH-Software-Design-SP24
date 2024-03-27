@@ -151,41 +151,53 @@ class Home(MethodView):
 
 class FuelQuoteForm(MethodView):
     init_every_request = False
-    def get(self):
-        return render_template('FuelQuoteForm.html')
 
-    def post(self):
+    def get(self):
         username = session.get('username')
 
         if not username:
-            flash('User not logged in.', 'error')
+            flash('User not logged in. Please log in to access the Fuel Quote Form.', 'error')
             return redirect(url_for('Login'))
 
-        # Fetch the user object within the current context to ensure it is attached to the current session
         user = UserCredentials.query.filter_by(username=username).first()
 
         if not user:
-            flash('User not found.', 'error')
+            flash('User session not found. Please log in again.', 'error')
             return redirect(url_for('Login'))
 
-        try:
-            delivery_date = datetime.strptime(request.form['deliveryDate'], '%Y-%m-%d').date()
+        client_info = ClientInformation.query.filter_by(user_id=user.id).first()
 
-            new_quote = FuelQuote(
-                gallons_requested=request.form['gallonsRequested'],
-                delivery_address=request.form['deliveryAddress'],
-                delivery_date=delivery_date,
-                suggested_price_per_gallon=request.form['suggested_price_per_gallon'],
-                total_amount_due=request.form['totalAmountDue'],
-                user_id=user.id
-            )
+        if client_info and client_info.address1:
+            delivery_address = client_info.address1
+        else:
+            flash('Delivery address not found in your profile. Please update your profile.', 'error')
+            return redirect(url_for('Profile'))
 
-            db.session.add(new_quote)
-            db.session.commit()
-            flash('Fuel quote submitted successfully!', 'success')
-        except Exception as e:
-            db.session.rollback()
-            flash(f'Error submitting fuel quote: {str(e)}', 'error')
+        return render_template('FuelQuoteForm.html', delivery_address=delivery_address)
+
+    def post(self):
+        username = session.get('username')
+        if not username:
+            flash('Please log in to submit a fuel quote.', 'error')
+            return redirect(url_for('Login'))
+
+        user = UserCredentials.query.filter_by(username=username).first()
+        if not user:
+            flash('User session expired.', 'error')
+            return redirect(url_for('Login'))
+
+        delivery_date = datetime.strptime(request.form['deliveryDate'], '%Y-%m-%d')
+        new_quote = FuelQuote(
+            gallons_requested=request.form['gallonsRequested'],
+            delivery_address=request.form['deliveryAddress'],
+            delivery_date=delivery_date,
+            suggested_price_per_gallon=request.form['suggestedPrice'],
+            total_amount_due=request.form['totalAmountDue'],
+            user_id=user.id
+        )
+        db.session.add(new_quote)
+        db.session.commit()
+        flash('Fuel quote submitted successfully.', 'success')
         return redirect(url_for('FuelQuoteForm'))
 
 
