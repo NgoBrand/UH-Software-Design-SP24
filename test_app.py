@@ -47,15 +47,6 @@ def test_profile_get(client):
 
     assert b'Profile' in response.data
 
-def test_history_get(client):
-    # Perform history request
-    response = client.get('/history', follow_redirects=True)
-
-    # Check if history page was requested
-    assert b'History' in response.data
-
-
-
 # Test when username is not in session
 def test_get_without_username(client):
     response = client.get('/')
@@ -267,7 +258,23 @@ def test_fuel_quote_form_post_success(client):
     with app.app_context():
         assert FuelQuote.query.count() == 1, "FuelQuote record was not created"
 
-
+def test_history_get(client):
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='testpassword')
+        db.session.add(user)
+        db.session.commit()
+        userHistory = FuelQuote(user_id=user.id, 
+                                gallons_requested= 10.0,
+                                delivery_address= '123 Test', 
+                                delivery_date=date(2023, 1, 1), 
+                                suggested_price_per_gallon = 10.0, 
+                                total_amount_due = 100.0)
+        db.session.add(userHistory)
+        db.session.commit()
+    with client.session_transaction() as session:
+        session['username'] = 'testuser'
+    response = client.get('/history', follow_redirects=True)
+    assert b'History' in response.data
 
 
 
