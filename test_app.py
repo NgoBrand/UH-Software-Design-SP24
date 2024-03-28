@@ -205,8 +205,22 @@ def test_logout(client):
 
 
 def test_fuel_quote_form_get(client):
+    # Setup: Create a user and a profile in the database
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='testpassword')
+        db.session.add(user)
+        db.session.commit()
+        # Assuming a profile is needed to access the Fuel Quote Form
+        profile = ClientInformation(user_id=user.id, full_name='Test User', address1='123 Test Address', city='Test City', state='TS', zipcode='12345')
+        db.session.add(profile)
+        db.session.commit()
+    with client.session_transaction() as session:
+        session['username'] = 'testuser'
+    # Make the request to the Fuel Quote Form page
     response = client.get('/fuel_quote_form', follow_redirects=True)
-    assert b'Fuel Quote Form' in response.data, "The Fuel Quote Form content was not found in the response."
+    assert b'Gallons Requested' in response.data, "Fuel Quote Form content not found."
+
+
 
 
 def test_direct_fuel_quote_insertion(client):
