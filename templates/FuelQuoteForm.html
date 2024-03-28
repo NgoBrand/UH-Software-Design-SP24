@@ -106,8 +106,9 @@
         </header>
         <nav>
             <ul>
-                <li><a href="{{ url_for('History') }}" class="btn">View Fuel History</a></li>
                 <li><a href="{{ url_for('Home') }}" class="btn">Profile</a></li>
+                <li><a href="{{ url_for('History') }}" class="btn">View Fuel History</a></li>
+                <li><a href="{{ url_for('Logout') }}" class="btn">Log Out</a></li>
             </ul>
         </nav>
         <form id="fuelQuoteForm" action="{{ url_for('FuelQuoteForm') }}" method="post">

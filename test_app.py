@@ -276,7 +276,3 @@ def test_history_get(client):
     response = client.get('/history', follow_redirects=True)
     assert b'History' in response.data
 
-
-
-
-
