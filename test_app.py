@@ -1,6 +1,6 @@
 from app import app
 from models import db, UserCredentials, FuelQuote, ClientInformation
-from views import add_endpoints
+from views import add_endpoints, get_password_hash
 from datetime import datetime, date
 import pytest
 
@@ -57,7 +57,7 @@ def test_get_without_username(client):
 def test_profile_post(client):
     # Create a user in the database for the test
     with client.application.app_context():
-        test_user = UserCredentials(username='testuser', password='testpass')
+        test_user = UserCredentials(username='testuser', password=get_password_hash('testpass'))
         db.session.add(test_user)
         db.session.commit()
 
@@ -96,7 +96,7 @@ def test_profile_post(client):
 
 def test_login_success_existing_profile(client):
     # Create a test user
-    test_user = UserCredentials(username='testuser', password='testpass')
+    test_user = UserCredentials(username='testuser', password=get_password_hash('testpass'))
 
     with app.app_context():
         db.session.add(test_user)
@@ -131,7 +131,7 @@ def test_login_wrong_password(client):
     # Create a test user
     test_user = UserCredentials()
     test_user.username = 'testuser'
-    test_user.password = 'testpassword'
+    test_user.password = password=get_password_hash('testpassword')
     with app.app_context():
         db.session.add(test_user)
         db.session.commit()

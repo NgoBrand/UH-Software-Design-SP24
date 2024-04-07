@@ -3,6 +3,20 @@ from flask.views import MethodView
 from models import db, UserCredentials, ClientInformation, FuelQuote
 from datetime import datetime
 import decimal
+import bcrypt
+
+# Source: https://stackoverflow.com/questions/77897298/storing-and-retrieving-hashed-password-in-postgres
+def get_password_hash(password):
+    pwd_bytes = password.encode('utf-8')
+    salt = bcrypt.gensalt()
+    hashed_password = bcrypt.hashpw(password=pwd_bytes, salt=salt)
+    string_password = hashed_password.decode('utf8')
+    return string_password
+
+def verify_password(plain_password, hashed_password):
+    password_byte_enc = plain_password.encode('utf-8')
+    hashed_password = hashed_password.encode('utf-8')
+    return bcrypt.checkpw(password_byte_enc, hashed_password)
 
 class Login(MethodView):
     init_every_request = False
@@ -14,9 +28,11 @@ class Login(MethodView):
         username = request.form.get('username')
         password = request.form.get('password')
 
+        password_hashed = get_password_hash(password)
+
         user = UserCredentials.query.filter_by(username=username).first()
 
-        if user and user.password == password:
+        if user and verify_password(password,user.password):
             session['username'] = username  # This is stored as a signed browser cookie
 
             client_info = ClientInformation.query.filter_by(user_id=user.id).first()
@@ -55,7 +71,7 @@ class Register(MethodView):
         # Create a new client and add it to the database
         new_client = UserCredentials()
         new_client.username = username
-        new_client.password = password
+        new_client.password = get_password_hash(password)
         db.session.add(new_client)
         db.session.commit()
 
