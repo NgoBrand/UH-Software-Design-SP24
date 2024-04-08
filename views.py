@@ -185,11 +185,20 @@ class FuelQuoteForm(MethodView):
 
         if client_info and client_info.address1:
             delivery_address = client_info.address1
+            state = client_info.state
+            fuel_quote = FuelQuote.query.filter_by(user_id=user.id).order_by(FuelQuote.delivery_date).first()
+            if fuel_quote:
+                history = "1"
+            else:
+                history = "0"
+
+
         else:
             flash('Delivery address not found in your profile. Please update your profile.', 'error')
             return redirect(url_for('Profile'))
+        
 
-        return render_template('FuelQuoteForm.html', delivery_address=delivery_address)
+        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, state = state, history = history)
 
     def post(self):
         username = session.get('username')

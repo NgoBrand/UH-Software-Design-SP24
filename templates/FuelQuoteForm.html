@@ -6,6 +6,13 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Quote Form</title>
     <style>
+        .hidden{
+            transform: translate(-10000px); 
+            display: flex;
+        }
+        .up{
+            transform: translateY(0px);
+        }
         body {
             font-family: Arial, sans-serif;
             margin: 0;
@@ -76,6 +83,7 @@
         .tooltip {
             position: relative;
             display: inline-block;
+            transform: translateY(0px);
         }
         .tooltip .tooltiptext {
             visibility: hidden;
@@ -100,10 +108,15 @@
     </style>
 </head>
 <body>
+    <input type="text" class= "hidden" id ="state" name = "state" value="{{ state }}" readonly>
+    <input type="text" class = "hidden" id = "history" name = "history" value =" {{ history }}" readonly>
     <div class="container">
+
         <header>
             <h1>Fuel Quote Form</h1>
+            
         </header>
+        
         <nav>
             <ul>
                 <li><a href="{{ url_for('Home') }}" class="btn">Profile</a></li>
@@ -116,8 +129,7 @@
             <input type="number" id="gallonsRequested" name="gallonsRequested" required><br>
 
             <label for="deliveryAddress">Delivery Address:</label>
-            <input type="text" id="deliveryAddress" name="deliveryAddress" value="{{ delivery_address }}" readonly><br>
-
+            <input type="text" id="deliveryAddress" name="deliveryAddress" value="{{ delivery_address }}" readonly>
             <div class="tooltip">
                 <label for="deliveryDate">Delivery Date:</label>
                 <input type="date" id="deliveryDate" name="deliveryDate" required>
@@ -126,15 +138,53 @@
             <div class="tooltip">
                 <label for="suggestedPrice">Suggested Price / gallon:</label>
                 <input type="text" id="suggestedPrice" name="suggestedPrice" readonly>
-                <span class="tooltiptext">Pricing module not implemented yet</span>
             </div>
             <div class="tooltip">
                 <label for="totalAmountDue">Total Amount Due:</label>
                 <input type="text" id="totalAmountDue" name="totalAmountDue" readonly>
-                <span class="tooltiptext">Will populate after all fields are completed</span>
             </div>
-            <input type="submit" value="Submit Quote">
+            <input type ="button" class = "up" value = "Get Quote" onclick = "GetQuote()">
+            <input type ="submit" class = "up" value="Submit Quote">
         </form>
     </div>
 </body>
+<script>
+    function GetQuote(){
+        var gallonsRequested = document.getElementById("gallonsRequested").value;
+        var state = document.getElementById("state").value;
+        var history = document.getElementById("history").value;
+        var suggestedPrice = 1.50;
+        var totalAmountDue = 0;
+        var locationFactor = 0;
+        var rateHistoryFactor = 0;
+        var gallonsRequestedFactor = 0;
+        var companyProfitFactor = 0.1;
+        var margin = 0;
+
+        if (state == "TX"){
+            locationFactor = 0.02;
+        }
+        else{
+            locationFactor = 0.04;
+        }
+        if (history == "1"){
+            rateHistoryFactor = 0.01;
+        }
+        else{
+            rateHistoryFactor = 0;
+        }
+        if (gallonsRequested > 1000){
+            gallonsRequestedFactor = 0.02;
+        }
+        else{
+            gallonsRequestedFactor = 0.03;
+        }
+        margin = 1.50 * (locationFactor - rateHistoryFactor + gallonsRequestedFactor + companyProfitFactor);
+        suggestedPrice = 1.50 + margin;
+        totalAmountDue = gallonsRequested * suggestedPrice;
+        document.getElementById("suggestedPrice").value = suggestedPrice;
+        document.getElementById("totalAmountDue").value = parseFloat(totalAmountDue).toFixed(2);
+        
+    }
+</script>
 </html>
