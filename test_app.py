@@ -260,7 +260,7 @@ def test_fuel_quote_form_post_success(client):
 
 def test_history_get(client):
     with app.app_context():
-        user = UserCredentials(username='testuser', password='testpassword')
+        user = UserCredentials(username='testuser', password='')
         db.session.add(user)
         db.session.commit()
         userHistory = FuelQuote(user_id=user.id, 
@@ -276,3 +276,92 @@ def test_history_get(client):
     response = client.get('/history', follow_redirects=True)
     assert b'History' in response.data
 
+def test_fuel_get_method_with_valid_user(client):
+    with client.session_transaction() as sess:
+        sess['username'] = 'testuser'
+
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='')
+        db.session.add(user)
+        db.session.commit()
+
+        client_info = ClientInformation(user_id=user.id, full_name='Test 123', address1='123 Test St', city='Houston', state='TX', zipcode='11111')
+        db.session.add(client_info)
+        db.session.commit()
+
+    response = client.get('/fuel_quote_form', follow_redirects=True)
+
+    assert b'Fuel Quote Form' in response.data
+    assert b'123 Test St' in response.data
+    assert b'TX' in response.data
+
+def test_fuel_get_method_without_user_session(client):
+    response = client.get('/fuel_quote_form', follow_redirects=True)
+
+    assert b'Client Login' in response.data
+
+def test_get_method_without_client_info(client):
+    with client.session_transaction() as sess:
+        sess['username'] = 'testuser'
+
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='')
+        db.session.add(user)
+        db.session.commit()
+
+    response = client.get('/fuel_quote_form', follow_redirects=True)
+
+    assert b'Client Profile' in response.data
+    assert b'Delivery address not found in your profile. Please update your profile' in response.data
+
+def test_fuel_post_method_with_valid_data(client):
+    with client.session_transaction() as sess:
+        sess['username'] = 'testuser'
+
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='')
+        db.session.add(user)
+        db.session.commit()
+
+        client_info = ClientInformation(user_id=user.id, full_name='Test 123', address1='123 Test St', city='Houston', state='TX', zipcode='11111')
+        db.session.add(client_info)
+        db.session.commit()
+
+    form_data = {
+        'suggestedPrice': '1.5',
+        'totalAmountDue': '50',
+        'deliveryDate': '2024-04-11',
+        'gallonsRequested': '100',
+        'deliveryAddress': '123 Test St'
+    }
+
+    response = client.post('/fuel_quote_form', data=form_data, follow_redirects=True)
+
+    assert b'Fuel quote submitted successfully.' in response.data
+    assert b'Fuel Quote Form' in response.data
+
+def test_fuel_post_method_with_invalid_data(client):
+    with client.session_transaction() as sess:
+        sess['username'] = 'testuser'
+
+    with app.app_context():
+        user = UserCredentials(username='testuser', password='')
+        db.session.add(user)
+        db.session.commit()
+
+        client_info = ClientInformation(user_id=user.id, full_name='Test 123', address1='123 Test St', city='Houston', state='TX', zipcode='11111')
+        db.session.add(client_info)
+        db.session.commit()
+
+    form_data = {
+        'suggestedPrice': 'invalid',
+        'totalAmountDue': 'invalid',
+        'deliveryDate': '2024-04-11',
+        'gallonsRequested': '100',
+        'deliveryAddress': '123 Test St'
+    }
+
+    response = client.post('/fuel_quote_form', data=form_data, follow_redirects=True)
+
+    assert b'Invalid input for price or total amount.' in response.data
+    assert b'Fuel Quote Form' in response.data

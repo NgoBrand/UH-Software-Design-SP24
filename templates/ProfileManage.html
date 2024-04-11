@@ -28,6 +28,15 @@
 </head>
 <body>
     <h1>Client Profile</h1>
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <p class="{{ category }}">{{ message }}</p>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <form action="/profile" method="post">
         <label for="fullName">Full Name:</label>
         <input type="text" id="fullName" name="fullName" maxlength="50" required><br>

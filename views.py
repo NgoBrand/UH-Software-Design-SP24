@@ -214,18 +214,20 @@ class FuelQuoteForm(MethodView):
         # Assuming you have a method to calculate these or they are being set somehow
         suggested_price_per_gallon = request.form.get('suggestedPrice', '0')
         total_amount_due = request.form.get('totalAmountDue', '0')
+        gallons_requested = request.form.get('gallonsRequested', '0')
 
         # Convert to float, or handle the case where the conversion fails
         try:
             suggested_price_per_gallon = float(suggested_price_per_gallon) if suggested_price_per_gallon else 0.0
-            total_amount_due = float(total_amount_due) if total_amount_due else 0.0
+            gallons_requested = float(gallons_requested) if gallons_requested else 0.0
+            total_amount_due = float(suggested_price_per_gallon*gallons_requested) if total_amount_due else 0.0
         except ValueError:
             flash('Invalid input for price or total amount.', 'error')
             return redirect(url_for('FuelQuoteForm'))
 
         delivery_date = datetime.strptime(request.form['deliveryDate'], '%Y-%m-%d')
         new_quote = FuelQuote(
-            gallons_requested=request.form['gallonsRequested'],
+            gallons_requested=gallons_requested,
             delivery_address=request.form['deliveryAddress'],
             delivery_date=delivery_date,
             suggested_price_per_gallon=decimal.Decimal(suggested_price_per_gallon),

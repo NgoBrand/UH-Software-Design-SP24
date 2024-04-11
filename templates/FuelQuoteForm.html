@@ -112,6 +112,14 @@
     <input type="text" class = "hidden" id = "history" name = "history" value =" {{ history }}" readonly>
     <div class="container">
 
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            {% for category, message in messages %}
+              <p class="{{ category }}">{{ message }}</p>
+            {% endfor %}
+          {% endif %}
+        {% endwith %}
+
         <header>
             <h1>Fuel Quote Form</h1>
             
