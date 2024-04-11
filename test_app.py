@@ -284,7 +284,7 @@ def setup_user_and_client_info(client, username='testuser', password='', add_cli
     with app.app_context():
         user = UserCredentials(username=username, password=password)
         db.session.add(user)
-        db.session.commit()  # Ensure user is committed to get a valid user.id
+        db.session.commit() 
 
         if add_client_info:
             client_info = ClientInformation(user_id=user.id, full_name='Test 123', address1='123 Test St', city='Houston', state='TX', zipcode='11111')
@@ -300,13 +300,11 @@ def test_fuel_get_method_with_valid_user(client):
     assert b'TX' in response.data
 
 def test_fuel_get_method_without_user_session(client):
-    # Attempt to access the fuel quote form without a session
     response = client.get('/fuel_quote_form', follow_redirects=True)
     assert b'Client Login' in response.data
 
 def test_get_method_without_client_info(client):
-    # Setup a user session without client information
-    setup_user_and_client_info(client, add_client_info=False)  # Do not add client info here
+    setup_user_and_client_info(client, add_client_info=False)  
     response = client.get('/fuel_quote_form', follow_redirects=True)
     assert b'Client Profile' in response.data
     assert b'Delivery address not found in your profile. Please update your profile' in response.data

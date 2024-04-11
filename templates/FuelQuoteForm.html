@@ -6,22 +6,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Fuel Quote Form</title>
     <style>
-        .hidden{
-            transform: translate(-10000px); 
-            display: flex;
-        }
-        .up{
-            transform: translateY(0px);
-        }
         body {
             font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
             background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
         }
         .container {
+            width: 100%;
             max-width: 600px;
-            margin: 50px auto;
+            margin: 0 auto;
             padding: 20px;
             background-color: #fff;
             border-radius: 8px;
@@ -30,6 +24,12 @@
         h1 {
             color: #333;
             text-align: center;
+            margin-bottom: 20px;
+        }
+        .message {
+            text-align: center; /* Centering the success message */
+            margin: 20px 0; /* Add some spacing */
+            color: green; /* Make the text green for visibility */
         }
         form {
             display: flex;
@@ -37,92 +37,65 @@
             gap: 15px;
         }
         label {
-            margin-bottom: 5px;
             color: #555;
         }
         input[type="number"], input[type="text"], input[type="date"] {
+            width: 100%;
             padding: 10px;
             border: 1px solid #ccc;
             border-radius: 4px;
             font-size: 16px;
         }
-        input[type="submit"] {
+        input[type="submit"], .btn {
+            width: 100%;
+            padding: 10px;
             background-color: #007bff;
-            color: #ffffff;
-            padding: 10px 20px;
+            color: white;
             border: none;
             border-radius: 4px;
             cursor: pointer;
             font-size: 16px;
             transition: background-color 0.3s;
         }
-        input[type="submit"]:hover {
-            background-color: #0056b3;
-        }
-        .btn {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-align: center;
-            text-decoration: none;
-            border-radius: 5px;
-            transition: background-color 0.3s;
-            display: inline-block;
-        }
-        .btn:hover {
+        input[type="submit"]:hover, .btn:hover {
             background-color: #0056b3;
         }
         nav ul {
-            list-style-type: none;
+            list-style: none;
             padding: 0;
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 20px;
         }
         nav ul li {
-            display: inline;
-            margin-right: 10px;
+            flex-grow: 1;
+            margin: 0 5px;
         }
-        .tooltip {
-            position: relative;
-            display: inline-block;
-            transform: translateY(0px);
-        }
-        .tooltip .tooltiptext {
-            visibility: hidden;
-            width: 220px;
-            background-color: black;
-            color: #fff;
+        nav ul li a {
+            display: block;
             text-align: center;
-            border-radius: 6px;
-            padding: 5px 0;
-            position: absolute;
-            z-index: 1;
-            bottom: 100%;
-            left: 50%;
-            margin-left: -110px;
-            opacity: 0;
-            transition: opacity 0s;
         }
-        .tooltip:hover .tooltiptext {
-            visibility: visible;
-            opacity: 1;
+        .alert-msg {
+            display: none;
+            color: red;
+            margin-top: 10px;
+            font-size: 0.9em;
         }
     </style>
 </head>
 <body>
-    <input type="text" class= "hidden" id ="state" name = "state" value="{{ state }}" readonly>
-    <input type="text" class = "hidden" id = "history" name = "history" value =" {{ history }}" readonly>
+    
     <div class="container">
-
         {% with messages = get_flashed_messages(with_categories=true) %}
           {% if messages %}
             {% for category, message in messages %}
-              <p class="{{ category }}">{{ message }}</p>
+              <div class="{{ category }}">{{ message }}</div>
             {% endfor %}
           {% endif %}
         {% endwith %}
 
         <header>
             <h1>Fuel Quote Form</h1>
-            
         </header>
         
         <nav>
@@ -134,65 +107,62 @@
         </nav>
         <form id="fuelQuoteForm" action="{{ url_for('FuelQuoteForm') }}" method="post">
             <label for="gallonsRequested">Gallons Requested:</label>
-            <input type="number" id="gallonsRequested" name="gallonsRequested" required><br>
+            <input type="number" id="gallonsRequested" name="gallonsRequested" required>
 
             <label for="deliveryAddress">Delivery Address:</label>
             <input type="text" id="deliveryAddress" name="deliveryAddress" value="{{ delivery_address }}" readonly>
-            <div class="tooltip">
-                <label for="deliveryDate">Delivery Date:</label>
-                <input type="date" id="deliveryDate" name="deliveryDate" required>
-                <span class="tooltiptext">Please select a date</span>
-            </div>
-            <div class="tooltip">
-                <label for="suggestedPrice">Suggested Price / gallon:</label>
-                <input type="text" id="suggestedPrice" name="suggestedPrice" readonly>
-            </div>
-            <div class="tooltip">
-                <label for="totalAmountDue">Total Amount Due:</label>
-                <input type="text" id="totalAmountDue" name="totalAmountDue" readonly>
-            </div>
-            <input type ="button" class = "up" value = "Get Quote" onclick = "GetQuote()">
-            <input type ="submit" class = "up" value="Submit Quote">
+
+            <label for="deliveryDate">Delivery Date:</label>
+            <input type="date" id="deliveryDate" name="deliveryDate" required>
+
+            <label for="suggestedPrice">Suggested Price / gallon:</label>
+            <input type="text" id="suggestedPrice" name="suggestedPrice" readonly>
+
+            <label for="totalAmountDue">Total Amount Due:</label>
+            <input type="text" id="totalAmountDue" name="totalAmountDue" readonly>
+
+            <input type="hidden" id="state" value="{{ state }}">
+            <input type="hidden" id="history" value="{{ history }}">
+            <input type="button" value="Get Quote" onclick="GetQuote()">
+            <input type="submit" value="Submit Quote">
+            <div class="alert-msg" id="quoteAlert">Don't forget to get a quote!</div>
         </form>
     </div>
-</body>
-<script>
-    function GetQuote(){
-        var gallonsRequested = document.getElementById("gallonsRequested").value;
-        var state = document.getElementById("state").value;
-        var history = document.getElementById("history").value;
-        var suggestedPrice = 1.50;
-        var totalAmountDue = 0;
-        var locationFactor = 0;
-        var rateHistoryFactor = 0;
-        var gallonsRequestedFactor = 0;
-        var companyProfitFactor = 0.1;
-        var margin = 0;
+    <script>
+        let quoteObtained = false;
 
-        if (state == "TX"){
-            locationFactor = 0.02;
+        function GetQuote() {
+            quoteObtained = true;
+            var gallonsRequested = document.getElementById("gallonsRequested").value;
+            var state = document.getElementById("state").value;
+            var history = document.getElementById("history").value;
+            var suggestedPrice = 1.50;  // Default base price
+            var totalAmountDue = 0;
+            var locationFactor = 0;
+            var rateHistoryFactor = 0;
+            var gallonsRequestedFactor = 0;
+            var companyProfitFactor = 0.1;
+            var margin = 0;
+
+            // Calculate the factors based on input
+            locationFactor = (state === "TX") ? 0.02 : 0.04;
+            rateHistoryFactor = (history === "1") ? 0.01 : 0;
+            gallonsRequestedFactor = (gallonsRequested > 1000) ? 0.02 : 0.03;
+            margin = 1.50 * (locationFactor - rateHistoryFactor + gallonsRequestedFactor + companyProfitFactor);
+            suggestedPrice += margin;
+            totalAmountDue = gallonsRequested * suggestedPrice;
+
+            // Update the form fields
+            document.getElementById("suggestedPrice").value = suggestedPrice.toFixed(2);
+            document.getElementById("totalAmountDue").value = totalAmountDue.toFixed(2);
         }
-        else{
-            locationFactor = 0.04;
-        }
-        if (history == "1"){
-            rateHistoryFactor = 0.01;
-        }
-        else{
-            rateHistoryFactor = 0;
-        }
-        if (gallonsRequested > 1000){
-            gallonsRequestedFactor = 0.02;
-        }
-        else{
-            gallonsRequestedFactor = 0.03;
-        }
-        margin = 1.50 * (locationFactor - rateHistoryFactor + gallonsRequestedFactor + companyProfitFactor);
-        suggestedPrice = 1.50 + margin;
-        totalAmountDue = gallonsRequested * suggestedPrice;
-        document.getElementById("suggestedPrice").value = suggestedPrice;
-        document.getElementById("totalAmountDue").value = parseFloat(totalAmountDue).toFixed(2);
-        
-    }
-</script>
+
+        document.getElementById("fuelQuoteForm").onsubmit = function() {
+            if (!quoteObtained) {
+                document.getElementById("quoteAlert").style.display = 'block';
+                return false;  // Prevent form submission
+            }
+        };
+    </script>
+</body>
 </html>
