@@ -181,8 +181,7 @@ class FuelQuoteForm(MethodView):
 
         client_info = ClientInformation.query.filter_by(user_id=user.id).first()
         if client_info and client_info.address1:
-            delivery_address = client_info.address1
-            address2 = client_info.address2 or 'Not provided'  # Default if no Address 2
+            delivery_address = f"{client_info.address1}, {client_info.address2 if client_info.address2 else ''}, {client_info.city}, {client_info.state} {client_info.zipcode}"
             state = client_info.state
             fuel_quote = FuelQuote.query.filter_by(user_id=user.id).order_by(FuelQuote.delivery_date.desc()).first()
             history = "1" if fuel_quote else "0"
@@ -190,7 +189,8 @@ class FuelQuoteForm(MethodView):
             flash('Delivery address not found in your profile. Please update your profile.', 'error')
             return redirect(url_for('Profile'))
 
-        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, address2=address2, state=state, history=history)
+        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, state=state, history=history)
+
 
     def post(self):
         username = session.get('username')
