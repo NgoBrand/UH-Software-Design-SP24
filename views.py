@@ -170,35 +170,27 @@ class FuelQuoteForm(MethodView):
 
     def get(self):
         username = session.get('username')
-
         if not username:
             flash('User not logged in. Please log in to access the Fuel Quote Form.', 'error')
             return redirect(url_for('Login'))
 
         user = UserCredentials.query.filter_by(username=username).first()
-
         if not user:
             flash('User session not found. Please log in again.', 'error')
             return redirect(url_for('Login'))
 
         client_info = ClientInformation.query.filter_by(user_id=user.id).first()
-
         if client_info and client_info.address1:
             delivery_address = client_info.address1
+            address2 = client_info.address2 or 'Not provided'  # Default if no Address 2
             state = client_info.state
-            fuel_quote = FuelQuote.query.filter_by(user_id=user.id).order_by(FuelQuote.delivery_date).first()
-            if fuel_quote:
-                history = "1"
-            else:
-                history = "0"
-
-
+            fuel_quote = FuelQuote.query.filter_by(user_id=user.id).order_by(FuelQuote.delivery_date.desc()).first()
+            history = "1" if fuel_quote else "0"
         else:
             flash('Delivery address not found in your profile. Please update your profile.', 'error')
             return redirect(url_for('Profile'))
-        
 
-        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, state = state, history = history)
+        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, address2=address2, state=state, history=history)
 
     def post(self):
         username = session.get('username')

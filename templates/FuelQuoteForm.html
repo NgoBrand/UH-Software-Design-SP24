@@ -26,11 +26,6 @@
             text-align: center;
             margin-bottom: 20px;
         }
-        .message {
-            text-align: center; /* Centering the success message */
-            margin: 20px 0; /* Add some spacing */
-            color: green; /* Make the text green for visibility */
-        }
         form {
             display: flex;
             flex-direction: column;
@@ -111,6 +106,9 @@
 
             <label for="deliveryAddress">Delivery Address:</label>
             <input type="text" id="deliveryAddress" name="deliveryAddress" value="{{ delivery_address }}" readonly>
+
+            <label for="address2">Delivery Address 2:</label>
+            <input type="text" id="address2" name="address2" value="{{ address2 }}" readonly>
 
             <label for="deliveryDate">Delivery Date:</label>
             <input type="date" id="deliveryDate" name="deliveryDate" required>
