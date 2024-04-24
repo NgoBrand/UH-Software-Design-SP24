@@ -125,6 +125,11 @@
     </div>
 
     <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var today = new Date().toISOString().split('T')[0];
+            document.getElementById('deliveryDate').setAttribute('min', today);
+        });
+
         let quoteObtained = false;
 
         function GetQuote() {

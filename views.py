@@ -187,13 +187,12 @@ class FuelQuoteForm(MethodView):
             state = client_info.state
             fuel_quote = FuelQuote.query.filter_by(user_id=user.id).order_by(FuelQuote.delivery_date.desc()).first()
             history = "1" if fuel_quote else "0"
+            today = datetime.today().isoformat()  # Get today's date in YYYY-MM-DD format
         else:
             flash('Delivery address not found in your profile. Please update your profile.', 'error')
             return redirect(url_for('Profile'))
 
-        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, state=state, history=history)
-
-
+        return render_template('FuelQuoteForm.html', delivery_address=delivery_address, state=state, history=history, today=today)
 
     def post(self):
         username = session.get('username')
