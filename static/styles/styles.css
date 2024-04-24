@@ -130,7 +130,7 @@ p {
 }
 
 .history-table thead tr{
-    background-color: rgb(255, 246, 234);
+    background-color: #c1defd;
     text-align: left;
     font-weight: bold;
 }
@@ -167,11 +167,12 @@ p {
 }
 
 .links button{
+    color: white;
     padding: 7px 20px;
     cursor: pointer;
     border: 1px solid lightgray;
-    border-radius: 15px;
-    background-color: rgba(240, 240, 240, 1);
+    border-radius: 4px;
+    background-color: #007bff;
     transition: all 0.3s ease 0s;
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
 }
